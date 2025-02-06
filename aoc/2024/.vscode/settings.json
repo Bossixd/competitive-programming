@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "unordered_map": "cpp",
+        "iostream": "cpp",
+        "istream": "cpp",
+        "string": "cpp"
+    }
+}
