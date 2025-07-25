@@ -5,8 +5,6 @@
 #include <list>
 using namespace std;
 
-
-
 int mx_zero;
 vector<pair<map<int, int>, map<int, int> > > *v;
 unordered_map<int, unordered_map<int, int> > dp;
