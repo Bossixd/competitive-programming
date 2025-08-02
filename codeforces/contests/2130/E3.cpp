@@ -147,24 +147,37 @@ void solve() {
 
     string s = "";
 
-    vector<int> pows = {1LL, 2LL, 4LL, 8LL, 16LL, 32LL};
-    vector<int> pow_sum = {1LL, 4LL, 14LL, 50LL, 186LL, 714LL};
-    for (int i = 0; i < n; i += 6) {
+    vector<vector<int>> pow_brackets = {
+        { 1 },
+        { 1, 1 },
+        { 2, 1 },
+        { 3, 1, 1 },
+        { 5, 1 },
+        { 7, 2, 1 },
+        { 10, 3, 2 },
+        { 15, 3, 1, 1 },
+        { 22, 2 },
+        { 31, 5, 1 },
+        { 44, 7, 3 },
+        { 63, 7, 2, 1 },
+        { 90, 1 },
+    };
+    vector<int> pow_sum = {1LL, 3LL, 7LL, 15LL, 31LL, 63LL, 127LL, 255LL, 511LL, 1023LL, 2047LL, 4095LL, 8191LL};
+    for (int i = 0; i < n; i += pow_brackets.size()) {
         vector<int> q;
-        for (int pow_idx = 0; pow_idx < min(n - i, (int) pows.size()); ++pow_idx) {
-            int pow = pows[pow_idx];
-            q.push_back(i + pow_idx + 1);
-            q.push_back(cb);
-            for (int j = 1; j < pow; ++j) {
-                q.push_back(ob);
+        for (int pow_idx = 0; pow_idx < min(n - i, (int) pow_brackets.size()); ++pow_idx) {
+            for (auto pow_bracket : pow_brackets[pow_idx]) {
+                for (int j = 0; j < pow_bracket; ++j) {
+                    q.push_back(i + pow_idx + 1);
+                    q.push_back(cb);
+                }
                 q.push_back(cb);
             }
-            q.push_back(cb);
         }
         query(q.begin(), q.end());
-        int bin = pow_sum[min(6LL, n - i) - 1] - c;
+        int bin = pow_sum[min((int) pow_brackets.size(), n - i) - 1] - c;
         int cur = 1;
-        for (int j = 0; j < min(6LL, n - i); ++j) {
+        for (int j = 0; j < min((int) pow_brackets.size(), n - i); ++j) {
             if ((bin & cur) == 0)
                 s += '(';
             else
