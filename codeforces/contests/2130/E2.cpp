@@ -1,0 +1,198 @@
+#include <iostream>
+#include <list>
+#include <vector>
+#include <stack>
+#include <queue>
+#include <cmath>
+#include <algorithm>
+#include <unordered_map>
+#include <unordered_set>
+#include <numeric>
+
+using namespace std;
+
+#define int long long
+
+struct DifferenceArray {
+    vector<int> v;
+    DifferenceArray(int n): v(n, 0) {};
+
+    void add(int l, int r, int val) {
+        if (r < l) return;
+        v[l] += val;
+        v[r + 1] -= val;
+    }
+
+    void push(vector<int>& vec) {
+        int n = v.size();
+        int m = vec.size();
+        int sm = 0;
+        for (int i = 0; i < n; ++i) {
+            sm += v[i];
+            v[i] = 0;
+            if (i < m)
+                vec[i] += sm;
+        }
+    }
+};
+
+// Create pair with dynamic type T and U
+template <typename T, typename U>
+pair<T, U> mkp(const T& first, const U& second) {
+    return make_pair(first, second);
+}
+
+int MOD = 998244353;
+
+// Inverse of i (mod p)
+int inv(int i) {
+    if (i == 1) return 1;
+    return MOD - (MOD / i) * inv(MOD % i) % MOD;
+}
+
+int c;
+int qc;
+
+void query(vector<int> v) {
+    qc = 0;
+    
+    cout << "? " << v.size() << ' ';
+    for (auto i : v) {cout << i << ' '; ++qc;}
+    cout << '\n';
+
+    cout.flush();
+
+    cin >> c;
+}
+
+void query(vector<int>::iterator start, vector<int>::iterator end) {
+    qc = 0;
+
+    cout << "? " << end - start << ' ';
+    while (start < end) {cout << *(start++) << ' '; ++qc;}
+    cout << '\n';
+
+    cout.flush();
+
+    cin >> c;
+}
+
+void solve() {
+    int n;
+    cin >> n;
+
+    vector<int> req(n);
+    for (int i = 1; i <= n; ++i)
+        req[i - 1] = i;
+
+    // Binary Search to find ()
+    int l = 1, r = n;
+    int ob = 1, cb = 2;
+
+    query(req.begin(), req.end());
+
+    if (c == 0) {
+        int m;
+        while (r - l > 1) {
+            m = (l + r) / 2;
+            query({m, 1});
+            if (c == 0)
+                l = m;
+            else
+                r = m;
+        }
+        cout << "! ";
+        for (int i = 0; i < l; ++i)
+            cout << ')';
+        for (int i = l; i < n; ++i)
+            cout << '(';
+        cout << '\n';
+        cout.flush();
+        return;
+    }
+    
+    int par = c;
+    int m;
+    while (r - l > 1) {
+        m = (l + r) / 2;
+        query(req.begin() + l - 1, req.begin() + m);
+        if (qc == 2 && c == 1) {
+            ob = l;
+            cb = m;
+            break;
+        }
+        if (c != 0) {
+            r = m;
+            continue;
+        }
+
+        query(req.begin() + m, req.begin() + r);
+        if (qc == 2 && c == 1) {
+            ob = m + 1;
+            cb = r;
+            break;
+        }
+        if (c != 0) {
+            l = m + 1;
+            continue;
+        }
+
+        query({m, m + 1});
+        if (c == 1) {
+            ob = m;
+            cb = m + 1;
+            break;
+        }
+    }
+
+    string s = "";
+
+    vector<int> pows = {1LL, 2LL, 4LL, 8LL, 16LL, 32LL};
+    vector<int> pow_sum = {1LL, 4LL, 14LL, 50LL, 186LL, 714LL};
+    for (int i = 0; i < n; i += 6) {
+        vector<int> q;
+        for (int pow_idx = 0; pow_idx < min(n - i, (int) pows.size()); ++pow_idx) {
+            int pow = pows[pow_idx];
+            q.push_back(i + pow_idx + 1);
+            // cout << "? ";
+            q.push_back(cb);
+            // cout << ") ";
+            for (int j = 1; j < pow; ++j) {
+                q.push_back(ob);
+                // cout << "( ";
+                q.push_back(cb);
+                // cout << ") ";
+            }
+            q.push_back(cb);
+            // cout << ") ";
+        }
+        // cout << '\n';
+        query(q.begin(), q.end());
+        // cout << 714 - c << '\n';
+        int bin = pow_sum[min(6LL, n - i) - 1] - c;
+        int cur = 1;
+        // cout << n - i << '\n';
+        for (int j = 0; j < min(6LL, n - i); ++j) {
+            // cout << (bin & cur) << '\n';
+            if ((bin & cur) == 0)
+                s += '(';
+            else
+                s += ')';
+            cur <<= 1;
+        }
+    }
+
+    cout << "! " << s << '\n';
+    cout.flush();
+}
+
+#undef int
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int N;
+    cin >> N;
+    while (N--)
+        solve();
+}
