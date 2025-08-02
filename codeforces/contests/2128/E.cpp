@@ -54,9 +54,9 @@ void solve() {
     int n, k;
     cin >> n >> k;
 
-    vector<int> v(n);
+    vector<int> v(n + 5, 0);
     int mn_val = 1000000000, mx_val = 0;
-    for (int i = 0; i < n; ++i) {
+    for (int i = 1; i <= n; ++i) {
         cin >> v[i];
         mn_val = min(mn_val, v[i]);
         mx_val = max(mx_val, v[i]);
@@ -64,35 +64,44 @@ void solve() {
 
     int l, m, r;
     int cm, cl, cr;
-    int n, k;
+    int mini;
+    int mn, mx;
+    int ccm, ccl, ccr;
 
-    l = mn_val, r = mx_val, m;
-    cm = -1, cl = -1, cr = -1;
-    vector<int> b(n);
+    l = mn_val, r = mx_val + 1, m;
+    cm = mn_val, cl = -1, cr = -1;
+    vector<int> b(n + 5, 0);
 
-    m = (l + r) / 2;
-
-    while (r - l > 1) {
+    while (l <= r) {
         m = (l + r) / 2;
-        b[0] = v[0] >= m ? 1 : -1;
-        for (int i = 1; i < n; ++i)
+        for (int i = 1; i <= n; ++i)
             b[i] = b[i - 1] + (v[i] >= m ? 1 : -1);
         
-        int mn = 0, mx = -1;
-        for (int i = k; i < n; ++i) {
-            mn = min(mn, b[i - k]);
-            mx = max(mx, b[i] - mn);
+        mn = 0, mx = -1;
+        mini = 0;
+
+        for (int i = k; i <= n; ++i) {
+            if (b[i - k] < mn) {
+                mn = b[i - k];
+                mini = i - k + 1;
+            }
+            if (b[i] - mn > mx) {
+                mx = b[i] - mn;
+                cm = m;
+                cl = mini;
+                cr = i;
+            }
         }
 
         if (mx >= 0) {
-            l = m;
+            l = m + 1;
         } else {
-            r = m;
+            r = m - 1;
         }
     }
 
-    cout << cm << ' ' << max(1LL, cl + 1) << ' ' << max(1LL, cr + 1) << '\n';
-    // cout << '\n';
+    cout << cm << ' ' << max(1LL, cl) << ' ' << max(1LL, cr) << '\n';
+    cout << '\n';
 }
 
 #undef int
