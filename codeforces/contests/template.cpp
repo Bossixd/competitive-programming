@@ -5,7 +5,9 @@
 #include <queue>
 #include <cmath>
 #include <algorithm>
+#include <map>
 #include <unordered_map>
+#include <set>
 #include <unordered_set>
 #include <numeric>
 
@@ -13,16 +15,20 @@ using namespace std;
 
 #define int long long
 
+// Layers and adds ranges in O(N)
+// Accumulates ranges onto a difference array, then pushes then onto a vector in O(N)
 struct DifferenceArray {
     vector<int> v;
     DifferenceArray(int n): v(n, 0) {};
 
+    // O(1)
     void add(int l, int r, int val) {
         if (r < l) return;
         v[l] += val;
         v[r + 1] -= val;
     }
 
+    // O(N)
     void push(vector<int>& vec) {
         int n = v.size();
         int m = vec.size();
@@ -33,6 +39,70 @@ struct DifferenceArray {
             if (i < m)
                 vec[i] += sm;
         }
+    }
+};
+
+// Creates a pair of multisets where |upper.size() - lower.size()| <= 1
+// Multisets are ordered
+struct BalancedLowerUpperMultiset {
+    multiset<int> lower, upper;
+
+    // O(1)
+    void balance() {
+        while (lower.size() > upper.size()) {
+            upper.insert(*lower.rbegin());
+            lower.erase(lower.find(*lower.rbegin()));
+        }
+        while (upper.size() > lower.size() + 1) {
+            lower.insert(*upper.begin());
+            upper.erase(upper.find(*upper.begin()));
+        }
+    }
+
+    // O(N log N)
+    void insert(int n) {
+        if (upper.size() == 0 || n >= *upper.begin())
+            upper.insert(n);
+        else
+            lower.insert(n);
+        balance();
+    }
+
+    // O(N log N)
+    bool erase(int n) {
+        if (lower.find(n) != lower.end())
+            lower.erase(lower.find(n));
+        else if (upper.find(n) != upper.end())
+            upper.erase(upper.find(n));
+        else
+            return false;
+        
+        balance();
+        return true;
+    }
+
+    // O(1)
+    int get_lower() {
+        if (lower.size() == upper.size()) return *lower.rbegin();
+        return lower.size() > upper.size() ? *lower.rbegin() : *upper.begin();
+    }
+
+    // O(1)
+    int get_upper() {
+        if (lower.size() == upper.size()) return *upper.begin();
+        return lower.size() < upper.size() ? *upper.begin() : *lower.rbegin();
+    }
+
+    // O(N)
+    void print() {
+        cout << "lwr: ";
+        for (auto i : lower)
+            cout << i << ' ';
+        cout << '\n';
+        cout << "upr: ";
+        for (auto i : upper)
+            cout << i << ' ';
+        cout << '\n';
     }
 };
 
