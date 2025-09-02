@@ -128,6 +128,22 @@ bool operator < (const Type& cmp) const {
 */
 
 void solve() {
+    int n;
+    cin >> n;
+    string s;
+    cin >> s;
+
+    unordered_map<char, int> mp;
+    for (auto c : s)
+        ++mp[c];
+    
+    for (int i = 1; i < n - 1; ++i) {
+        if (mp[s[i]] != 1) {
+            cout << "YES\n";
+            return;
+        }
+    }
+    cout << "NO\n";
 }
 
 #undef int

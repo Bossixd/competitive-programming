@@ -128,6 +128,36 @@ bool operator < (const Type& cmp) const {
 */
 
 void solve() {
+    int la, lb;
+    cin >> la >> lb;
+
+    int ra = 0, rb = 0;
+    int mul = 1;
+    while (true) {
+        if (la == lb || la + 1 == lb) {
+            break;
+        }
+        ra += mul * (la % 10);
+        rb += mul * (lb % 10);
+        mul *= 10;
+        la /= 10;
+        lb /= 10;
+    }
+
+    int score = 0;
+
+    while (la != lb) {
+        score++;
+        la /= 10;
+        lb /= 10;
+    }
+
+    while (la != 0) {
+        la /= 10;
+        score += 2;
+    }
+
+    cout << score << '\n';
 }
 
 #undef int

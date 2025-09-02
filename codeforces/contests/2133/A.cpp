@@ -128,6 +128,21 @@ bool operator < (const Type& cmp) const {
 */
 
 void solve() {
+    int n;
+    cin >> n;
+
+    vector<int> v(105, 0);
+
+    int b;
+    bool found = false;
+    for (int i = 0; i < n; ++i) {
+        cin >> b;
+        v[b]++;
+        if (v[b] >= 2)
+            found = true;
+    }
+
+    cout << (found ? "YES\n" : "NO\n");
 }
 
 #undef int

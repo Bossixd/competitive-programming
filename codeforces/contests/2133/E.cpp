@@ -128,6 +128,115 @@ bool operator < (const Type& cmp) const {
 */
 
 void solve() {
+    int n;
+    cin >> n;
+
+    vector<int> cnt(n + 5, 0);
+    unordered_map<int, unordered_set<int>> edge;
+    vector<pair<int, int>> res;
+    vector<bool> searched(n + 5, false);
+
+    int a, b;
+    for (int i = 1; i < n; ++i) {
+        cin >> a >> b;
+        ++cnt[a]; ++cnt[b];
+        edge[a].insert(b);
+        edge[b].insert(a);
+    }
+
+    for (int i = 1; i <= n; ++i) {
+        if (cnt[i] != 2) continue;
+        bool found = true;
+        
+        for (auto e : edge[i]) {
+            if (cnt[e] <= 2)
+                found = false;
+        }
+
+        if (!found) continue;
+
+        vector<int> buf(cnt[i]);
+        int index = 0;
+
+        for (auto e : edge[i])
+            buf[index++] = e;
+
+        res.push_back(mkp(2, i));
+        res.push_back(mkp(1, i));
+
+        for (auto e : buf) {
+            edge[i].erase(e);
+            edge[e].erase(i);
+            cnt[e]--;
+            cnt[i]--;
+        }
+
+        searched[i] = true;
+    }
+
+    priority_queue<pair<int, int>> pq;
+    for (int i = 1; i <= n; ++i) {
+        if (searched[i]) continue;
+        pq.push(mkp(cnt[i], i));
+    }
+
+    vector<int> ones;
+
+    while (!pq.empty()) {
+        auto cur = pq.top();
+        pq.pop();
+
+        if (cnt[cur.second] != cur.first) {
+            pq.push(mkp(cnt[cur.second], cur.second));
+            continue;
+        }
+
+        if (cur.first > 2) {
+            res.push_back(mkp(2, cur.second));
+            res.push_back(mkp(1, cur.second));
+
+            vector<int> buf(edge[cur.second].size());
+            int index = 0;
+
+            for (auto e : edge[cur.second])
+                buf[index++] = e;
+            
+            for (auto e : buf) {
+                edge[cur.second].erase(e);
+                edge[e].erase(cur.second);
+                cnt[e]--;
+                cnt[cur.second]--;
+            }
+        } else if (cur.first <= 1)
+            ones.push_back(cur.second);
+    }
+
+    for (int i = 0; i < ones.size(); ++i) {
+        if (searched[ones[i]]) continue;
+        searched[ones[i]] = true;
+
+        res.push_back(mkp(1, ones[i]));
+        int cur = ones[i];
+        while (true) {
+            int done = true;
+            for (auto e : edge[cur]) {
+                if (searched[e]) continue;
+                searched[e] = true;
+                done = false;
+                cur = e;
+                res.push_back(mkp(1, e));
+            }
+
+            if (done) break;
+        }
+    }
+
+    cout << res.size() << '\n';
+    cout << (5.0 / 4.0 * n) << '\n';
+    if (res.size() > (5.0 / 4.0 * n))
+        while (true);
+    for (auto i : res)
+        cout << i.first << ' ' << i.second << '\n';
 }
 
 #undef int

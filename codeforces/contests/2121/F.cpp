@@ -127,7 +127,66 @@ bool operator < (const Type& cmp) const {
 }
 */
 
+vector<int> seg, v, pref;
+
+int build(int id, int l, int r) {
+    if (l == r)
+        return seg[id] = v[l];
+    int m = l + (r - l) / 2;
+    return seg[id] = max(build((id<<1), l, m), build((id<<1) + 1, m + 1, r));
+}
+
+int fl, fr, fe;
+
+int gmx(int id, int l, int r) {
+    if (seg[id] < fe || r < fl || l > fr)
+        return -1e10;
+    
+    if (l >= fl && r <= fr)
+        return seg[id];
+    
+    int m = l + (r - l) / 2;
+    int res = max(gmx((id<<1), l, m), gmx((id<<1) + 1, m + 1, r));
+    return res;
+}
+
 void solve() {
+    int n, s, x;
+    cin >> n >> s >> x;
+
+    fe = x;
+
+    v = vector<int>(n + 5);
+    pref = vector<int>(n + 5);
+    seg = vector<int>(n * 4 + 5, 0);
+    unordered_map<int, vector<int>> mp;
+
+    v[0] = 0;
+    for (int i = 1; i <= n; ++i)
+        cin >> v[i];
+    
+    pref[0] = 0;
+    for (int i = 1; i <= n; ++i) {
+        pref[i] = pref[i - 1] + v[i];
+        mp[pref[i]].push_back(i);
+    }
+
+    // sort mp and binary search to find starting and ending positions
+    // Create pairs of max_value and position to see what end position is
+    // No need segment tree
+
+    build(1, 1, n);
+
+    int cnt = 0;
+    for (int i = 1; i <= n; ++i) {
+        for (auto c : mp[s + pref[i - 1]]) {
+            if (c < i) continue;
+            fl = i, fr = c;
+            if (gmx(1, 1, n) == x)
+                ++cnt;
+        }
+    }
+    cout << cnt << '\n';
 }
 
 #undef int

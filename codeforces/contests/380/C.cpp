@@ -10,12 +10,11 @@
 #include <set>
 #include <unordered_set>
 #include <numeric>
+#include <cassert>
 
 using namespace std;
 
 #define int long long
-
-int MOD = 998244353;
 
 // Layers and adds ranges in O(N)
 // Accumulates ranges onto a difference array, then pushes then onto a vector in O(N)
@@ -114,20 +113,77 @@ pair<T, U> mkp(const T& first, const U& second) {
     return make_pair(first, second);
 }
 
+int MOD = 998244353;
+
 // Inverse of i (mod p)
 int inv(int i) {
     if (i == 1) return 1;
     return MOD - (MOD / i) * inv(MOD % i) % MOD;
 }
 
-// Adding "sorting" to structs
-/*
-bool operator < (const Type& cmp) const {
-    return id < cmp.id;
+struct Node {
+    int left, right, cur;
+};
+
+string s;
+vector<Node> nodes(3e6, {0, 0, 0});
+int ql, qr;
+
+void build (int id, int l, int r) {
+    if (l == r) {
+        nodes[id].cur = 0;
+        nodes[id].left = 0;
+        nodes[id].right = 0;
+
+        if (s[l] == '(')
+            nodes[id].right = 1;
+        else
+            nodes[id].left = 1;
+        return;
+    }
+
+    int m = l + (r - l) / 2;
+    build(id<<1, l, m); build((id<<1) + 1, m + 1, r);
+    Node left = nodes[(id<<1)], right = nodes[(id<<1) + 1];
+
+    int pairs = min(left.right, right.left);
+    nodes[id].left = left.left + right.left - pairs;
+    nodes[id].right = left.right + right.right - pairs;
+    nodes[id].cur = left.cur + right.cur + pairs * 2;
 }
-*/
+
+Node score(int id, int l, int r) {
+    if (l >= ql && r <= qr)
+        return {nodes[id].left, nodes[id].right, nodes[id].cur};
+    if (r < ql || l > qr)
+        return {0, 0, 0};
+    
+    Node* node = &nodes[id];
+
+    int m = l + (r - l) / 2;
+    Node left = score(id<<1, l, m);
+    Node right = score((id<<1) + 1, m + 1, r);
+
+    int pairs = min(left.right, right.left);
+    return {left.left + right.left - pairs, left.right + right.right - pairs, left.cur + right.cur + pairs * 2};
+}
 
 void solve() {
+    cin >> s;
+
+    int n = s.size();
+
+    s = '-' + s;
+
+    build(1, 1, n);
+
+    int q;
+    cin >> q;
+
+    while (q--) {
+        cin >> ql >> qr;
+        cout << score(1, 1, n).cur << '\n';
+    }
 }
 
 #undef int
@@ -136,8 +192,8 @@ int main() {
     ios::sync_with_stdio(false);
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    int N;
-    cin >> N;
-    while (N--)
+    // int N;
+    // cin >> N;
+    // while (N--)
         solve();
 }

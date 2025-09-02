@@ -128,6 +128,59 @@ bool operator < (const Type& cmp) const {
 */
 
 void solve() {
+    int n, k;
+    cin >> n >> k;
+
+    int l, r, mn, idx1, idx2;
+    bool overlap = false;
+    
+    vector<pair<int, int>> v(n);
+    vector<int> a(n), b(n);
+    for (int i = 0; i < n; ++i)
+        cin >> a[i];
+    for (int i = 0; i < n; ++i)
+        cin >> b[i];
+    for (int i = 0; i < n; ++i)
+        v[i] = mkp(min(a[i], b[i]), max(a[i], b[i]));
+    
+    // Check Sum
+    int sm = 0;
+    for (auto i : v)
+        sm += i.second - i.first;
+    
+    // Sort
+    sort(v.begin(), v.end(), [](pair<int, int> a, pair<int, int> b) {
+        return a.second < b.second;
+    });
+    sort(v.begin(), v.end(), [](pair<int, int> a, pair<int, int> b) {
+        return a.first < b.first;
+    });
+
+    // Get Overlap
+    r = 1;
+    while (r != n) {
+        if (v[r - 1].second >= v[r].first) {
+            overlap = true;
+            break;
+        }
+        ++r;
+    }
+
+    if (overlap) {
+        cout << sm << '\n';
+        return;
+    }
+
+    // Get Min Range
+    r = 1;
+    mn = 1e18;
+    while (r != n) {
+        if (v[r].first - v[r - 1].second < mn)
+            mn = v[r].first - v[r - 1].second;
+        ++r;
+    }
+
+    cout << sm + (2 * mn) << '\n';
 }
 
 #undef int

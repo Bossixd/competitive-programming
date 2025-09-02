@@ -128,6 +128,32 @@ bool operator < (const Type& cmp) const {
 */
 
 void solve() {
+    int n, k;
+    cin >> n >> k;
+
+    vector<int> a(n), b(n);
+    unordered_map<int, int> aa, bb;
+    for (int i = 0; i < n; ++i) {
+        cin >> a[i];
+        aa[min(a[i] % k, k - (a[i] % k))]++;
+    }
+    for (int i = 0; i < n; ++i) {
+        cin >> b[i];
+        bb[min(b[i] % k, k - (b[i] % k))]++;
+    }
+
+    if (aa.size() != bb.size()) {
+        cout << "NO\n";
+        return;
+    }
+
+    for (auto i : aa) {
+        if (i.second != bb[i.first]) {
+            cout << "NO\n";
+            return;
+        }
+    }
+    cout << "YES\n";
 }
 
 #undef int

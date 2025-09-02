@@ -127,7 +127,83 @@ bool operator < (const Type& cmp) const {
 }
 */
 
+vector<unordered_map<int, int>> v(2e5 + 5);
+unordered_map<int, unordered_map<int, bool>> edge;
+vector<bool> built(2e5 + 5);
+vector<int> children(2e5 + 5);
+
+int build(int cur) {
+    if (built[cur]) return children[cur];
+    built[cur] = true;
+    
+    if (edge[cur].size() == 1)
+        return children[cur] = 1;
+
+    for (auto &[child, _] : edge[cur]) {
+        if (built[child]) continue;
+        int child_score = build(child);
+        children[cur] += child_score;
+        v[cur][child] = child_score;
+    }
+
+    return children[cur];
+}
+
+void build2(int cur, int par) {
+    if (built[cur]) return;
+    built[cur] = true;
+
+    v[cur][par] = children[par] - v[par][cur];
+    children[cur] += v[cur][par];
+
+    for (auto &[child, _] : edge[cur])
+        build2(child, cur);
+}
+
 void solve() {
+    int n;
+    cin >> n;
+
+    edge.clear();
+    fill(v.begin(), v.begin() + n + 2, unordered_map<int, int>());
+    fill(built.begin(), built.begin() + n + 2, false);
+    fill(children.begin(), children.begin() + n + 2, 0);
+
+    int a, b, mx_idx = 1;
+    for (int i = 1; i < n; ++i) {
+        cin >> a >> b;
+        edge[a][b] = true;
+        edge[b][a] = true;
+        if (edge[a].size() > edge[mx_idx].size())
+            mx_idx = a;
+        if (edge[b].size() > edge[mx_idx].size())
+            mx_idx = b;
+    }
+
+    built[mx_idx] = true;
+    for (auto &[child, _] : edge[mx_idx]) {
+        int child_score = build(child);
+        children[mx_idx] += child_score;
+        v[mx_idx][child] = child_score;
+    }
+
+    fill(built.begin(), built.end(), false);
+
+    built[mx_idx] = true;
+    for (auto &[child, _] : edge[mx_idx])
+        build2(child, mx_idx);
+
+    int mn = 1e18;
+    for (int i = 1; i <= n; ++i) {
+        int res = 0;
+        for (auto p : v[i]) {
+            if (edge[p.first].size() == 1) continue;
+            res += p.second;
+        }
+        mn = min(mn, res);
+    }
+
+    cout << mn << '\n';
 }
 
 #undef int

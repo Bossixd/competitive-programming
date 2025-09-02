@@ -127,7 +127,67 @@ bool operator < (const Type& cmp) const {
 }
 */
 
+vector<int> lazy(5e7, 0);
+int el, er, ei;
+
+void build(int id, int l, int r) {
+    if (r < el || l > er)
+        return;
+
+    if (el <= l && r <= er) {
+        lazy[id] = ei;
+        return;
+    }
+
+    int m = l + (r - l) / 2;
+
+    if (lazy[id] != 0)
+        lazy[(id<<1)] = lazy[(id<<1) + 1] = lazy[id];
+    lazy[id] = 0;
+
+    build((id<<1), l, m);
+    build((id<<1) + 1, m + 1, r);
+}
+
+unordered_set<int> s;
+
+void traverse(int id, int l, int r) {
+    if (lazy[id] != 0) {
+        s.insert(lazy[id]);
+        return;
+    }
+
+    if (l == r) return;
+
+    int m = l + (r - l) / 2;
+    traverse((id<<1), l, m);
+    traverse((id<<1) + 1, m + 1, r);
+}
+
 void solve() {
+    int n;
+    cin >> n;
+
+    vector<pair<int, int>> posters(n + 1);
+
+    int mn = 1e7 + 1, mx = 0;
+    for (int i = 1; i <= n; ++i) {
+        cin >> el >> er;
+        posters[i] = mkp(el, er);
+        mn = min(mn, el);
+        mx = max(mx, er);
+    }
+
+    for (int i = 1; i <= n; ++i) {
+        el = posters[i].first;
+        er = posters[i].second;
+        ei = i;
+        build(1, mn, mx);
+    }
+    traverse(1, mn, mx);
+    cout << s.size() << '\n';
+    unordered_set<int>().swap(s);
+    fill(lazy.begin(), lazy.end(), (int) 0);
 }
 
 #undef int

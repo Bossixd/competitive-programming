@@ -15,8 +15,6 @@ using namespace std;
 
 #define int long long
 
-int MOD = 998244353;
-
 // Layers and adds ranges in O(N)
 // Accumulates ranges onto a difference array, then pushes then onto a vector in O(N)
 struct DifferenceArray {
@@ -114,20 +112,48 @@ pair<T, U> mkp(const T& first, const U& second) {
     return make_pair(first, second);
 }
 
+int MOD = 998244353;
+
 // Inverse of i (mod p)
 int inv(int i) {
     if (i == 1) return 1;
     return MOD - (MOD / i) * inv(MOD % i) % MOD;
 }
 
-// Adding "sorting" to structs
-/*
-bool operator < (const Type& cmp) const {
-    return id < cmp.id;
-}
-*/
+struct T {
+    int left, right, len;
+};
 
 void solve() {
+    int n;
+    cin >> n;
+
+    string s;
+    cin >> s;
+
+    vector<int> sums(n + 5, 0);
+    int res = 0, cur = 0, mx = 0, last;
+    for (int i = 0; i < n; ++i) {
+        char c = s[i];
+        if (c == 'F') {
+            res += cur;
+        } else {
+            last = i;
+            while (i < n && s[i] != 'F')
+                ++i;
+            mx = max(mx, i - last);
+            int last_cur = cur;
+            for (int j = 1; j <= i - last; ++j) {
+                cur -= sums[j];
+                res += (i - j - sums[j] + 1) * (i - j - sums[j] + 2) / 2 - (last - 1 - sums[j] + 1) * (last - 1 - sums[j] + 2) / 2;
+                sums[j] = i - j + 1;
+                cur += sums[j];
+                res += last_cur;
+            }
+            --i;
+        }
+    }
+    cout << res << '\n';
 }
 
 #undef int
@@ -136,8 +162,8 @@ int main() {
     ios::sync_with_stdio(false);
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    int N;
-    cin >> N;
-    while (N--)
+    // int N;
+    // cin >> N;
+    // while (N--)
         solve();
 }

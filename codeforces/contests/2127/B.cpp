@@ -128,6 +128,67 @@ bool operator < (const Type& cmp) const {
 */
 
 void solve() {
+    int n, x;
+    cin >> n >> x;
+
+    char c;
+    int left = -1, right = -1;
+    for (int i = 1; i < x; ++i) {
+        cin >> c;
+        if (c == '#')
+            left = i;
+    }
+
+    cin >> c;
+
+    int i;
+    for (i = x + 1; i <= n; ++i) {
+        cin >> c;
+        if (c == '#') {
+            right = i;
+            ++i;
+            while (i <= n) {
+                cin >> c;
+                ++i;
+            }
+        }
+    }
+
+    int brute_left = x;
+    int brute_right = n - x + 1;
+    int nat_left = left + 1;
+    int nat_right = n - right + 2;
+
+    // cout << left << ' ' << right << '\n';
+    // cout << brute_left << ' ' << brute_right << '\n';
+    // cout << nat_left << ' ' << nat_right << '\n';
+
+    if (x == 1 || x == n || (left == -1 && right == -1)) {
+        cout << 1 << '\n';
+        return;
+    }
+
+    if (left == -1) {
+        cout << min(brute_left, nat_right) << '\n';
+        return;
+    }
+
+    if (right == -1) {
+        cout << min(nat_left, brute_right) << '\n';
+        return;
+    }
+
+    if (left + 1 == x) {
+        cout << min(nat_left, brute_right) << '\n';
+        return;
+    }
+    
+    if (right - 1 == x) {
+        cout << min(brute_left, nat_right) << '\n';
+        return;
+    }
+
+    cout << max(min(brute_left, nat_right), min(nat_left, brute_right)) << '\n';
 }
 
 #undef int

@@ -15,8 +15,6 @@ using namespace std;
 
 #define int long long
 
-int MOD = 998244353;
-
 // Layers and adds ranges in O(N)
 // Accumulates ranges onto a difference array, then pushes then onto a vector in O(N)
 struct DifferenceArray {
@@ -114,20 +112,18 @@ pair<T, U> mkp(const T& first, const U& second) {
     return make_pair(first, second);
 }
 
+int MOD = 998244353;
+
 // Inverse of i (mod p)
 int inv(int i) {
     if (i == 1) return 1;
     return MOD - (MOD / i) * inv(MOD % i) % MOD;
 }
 
-// Adding "sorting" to structs
-/*
-bool operator < (const Type& cmp) const {
-    return id < cmp.id;
-}
-*/
-
 void solve() {
+    int n;
+    cin >> n;
+    unordered_set<int> s;
 }
 
 #undef int

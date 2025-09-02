@@ -15,7 +15,7 @@ using namespace std;
 
 #define int long long
 
-int MOD = 998244353;
+int MOD = 1000000007;
 
 // Layers and adds ranges in O(N)
 // Accumulates ranges onto a difference array, then pushes then onto a vector in O(N)
@@ -127,7 +127,124 @@ bool operator < (const Type& cmp) const {
 }
 */
 
+unordered_map<int, unordered_map<int, bool>> mp;
+vector<int> frac(2e5 + 5);
+
+int dfs(int cur, int par) {
+
+    // Len Children Logic
+    int len_children = 0;
+    for (auto &[child, _] : mp[cur]) {
+        if (child == par) continue;
+        if (mp[child].size() > 1)
+            ++len_children;
+    }
+
+    // Rec Logic
+    int res = 1;
+    for (auto &[child, _] : mp[cur]) {
+        if (child == par) continue;
+        res = (res * dfs(child, cur)) % MOD;
+    }
+
+    return (res * frac[mp[cur].size() - 1 - len_children]) % MOD;
+}
+
+
 void solve() {
+    int n, m;
+    cin >> n >> m;
+
+    int a, b;
+    int start_idx = 1;
+    for (int i = 0; i < m; ++i) {
+        cin >> a >> b;
+        mp[a][b] = true;
+        mp[b][a] = true;
+        if (mp[a].size() > mp[start_idx].size())
+            start_idx = a;
+        if (mp[b].size() > mp[start_idx].size())
+            start_idx = b;
+    }
+
+    int start_chains = 0;
+    for (auto &[child, _] : mp[start_idx])
+        if (mp[child].size() != 1) ++start_chains;
+    
+    if (start_chains == 0) {
+        cout << (frac[mp[start_idx].size()] * 2) % MOD << '\n';
+        mp.clear();
+        return;
+    }
+
+    // cout << start_idx << '\n';
+
+    if (m != n - 1) {
+        cout << 0 << '\n';
+        mp.clear();
+        return;
+    }
+
+    unordered_set<int> s;
+    queue<int> q;
+    s.insert(start_idx);
+
+    int score = 0;
+    int chain_cnt = 0;
+    for (auto &[child, _] : mp[start_idx]) {
+        // cout << child << '\n';
+        if (mp[child].size() == 1) {
+            ++score;
+            continue;
+        }
+
+        q.push(child);
+        ++chain_cnt;
+    }
+
+    if (chain_cnt > 2) {
+        cout << 0 << '\n';
+        mp.clear();
+        return;
+    }
+
+    int res = frac[score];
+    while (!q.empty()) {
+        int cur = q.front();
+        q.pop();
+
+        if (s.find(cur) != s.end()) continue;
+        s.insert(cur);
+        
+        score = 0;
+        int chain = -1;
+        // cout << "cur: " << cur << ' ' << mp[cur].size() << '\n';
+        for (auto &[child, _] : mp[cur]) {
+            // cout << child << '\n';
+            if (mp[child].size() == 1) {
+                ++score;
+                continue;
+            }
+
+            if (s.find(child) != s.end()) continue;
+
+            q.push(child);
+            if (chain == -1)
+                chain = child;
+            else {
+                // cout << cur << ' ' << chain << ' ' << child << '\n';
+                cout << 0 << '\n';
+                mp.clear();
+                return;
+            }
+        }
+
+        res = (res * frac[score]) % MOD;
+    }
+
+    cout << (res * 4) % MOD << '\n';
+
+    mp.clear();
 }
 
 #undef int
@@ -136,6 +253,11 @@ int main() {
     ios::sync_with_stdio(false);
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
+    frac[0] = 1;
+    frac[1] = 1;
+    for (int i = 2; i <= 2e5 + 3; ++i)
+        frac[i] = (frac[i - 1] * i) % MOD;
+    
     int N;
     cin >> N;
     while (N--)

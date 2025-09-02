@@ -128,6 +128,84 @@ bool operator < (const Type& cmp) const {
 */
 
 void solve() {
+    int n, m;
+    cin >> n >> m;
+
+    vector<vector<int>> v(n, vector<int>(m));
+
+    int mx = 0;
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < m; ++j) {
+            cin >> v[i][j];
+            mx = max(mx, v[i][j]);
+        }
+
+    int x, y, cntt = 0;
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < m; ++j)
+            if (v[i][j] == mx) {
+                x = i;
+                y = j;
+                ++cntt;
+            }
+
+    int cnt = 0;
+    bool xx = true;
+    // Check x-axis
+    for (int i = 0; i < n; ++i)
+        if (v[i][y] == mx) cnt++;
+    
+    if (cnt == 1) {
+        cnt = 0;
+        xx = false;
+        // Check y-axis
+        for (int j = 0; j < m; ++j)
+            if (v[x][j] == mx) {
+                cnt++;
+                v[x][j] = 0;
+            }
+    } else {
+        // Reset x-axis
+        for (int i = 0; i < n; ++i)
+            if (v[i][y] == mx)
+                v[i][y] = 0;
+    }
+
+    // Get mx position
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < m; ++j)
+            if (v[i][j] == mx) {
+                x = i;
+                y = j;
+                break;
+            }
+
+    // cout << (xx ? "checking y\n" : "checking x\n");
+    // cout << x << ' ' << y << '\n';
+    
+    if (xx) { // If x-axis
+        // Check y-axis
+        for (int j = 0; j < m; ++j)
+            if (v[x][j] == mx)
+                cnt++;
+    } else {
+        // Check x-axis
+        for (int i = 0; i < n; ++i)
+            if (v[i][y] == mx)
+                cnt++;
+    }
+
+    if (cnt != cntt && cnt == 2) {
+        --cnt;
+        for (int j = 0; j < m; ++j)
+            if (v[x][j] == mx)
+                cnt++;
+    }
+
+    if (cnt == cntt)
+        cout << mx - 1 << '\n';
+    else
+        cout << mx << '\n';
 }
 
 #undef int

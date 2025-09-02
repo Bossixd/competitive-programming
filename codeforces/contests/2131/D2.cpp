@@ -128,6 +128,35 @@ bool operator < (const Type& cmp) const {
 */
 
 void solve() {
+    int n;
+    cin >> n;
+
+    unordered_map<int, unordered_map<int, bool>> edge;
+
+    int a, b;
+    for (int i = 1; i < n; ++i) {
+        cin >> a >> b;
+        edge[a][b] = true;
+        edge[b][a] = true;
+    }
+
+    if (n == 2) {
+        cout << 0 << '\n';
+        return;
+    }
+
+    int mx = 0, res = 0;
+    for (int i = 1; i <= n; ++i) {
+        if (edge[i].size() == 1) ++res;
+        int res = 0;
+        for (auto &[e, f] : edge[i])
+            if (edge[e].size() == 1)
+                ++res;
+        
+        mx = max(mx, res);
+    }
+
+    cout << res - mx << '\n';
 }
 
 #undef int

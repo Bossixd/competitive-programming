@@ -128,6 +128,55 @@ bool operator < (const Type& cmp) const {
 */
 
 void solve() {
+    int a, b, c, d;
+    cin >> a >> b >> c >> d;
+
+    vector<int> va(a), vb(b), vc(c), vd(d);
+    for (int i = 0; i < a; ++i)
+        cin >> va[i];
+    for (int i = 0; i < b; ++i)
+        cin >> vb[i];
+    for (int i = 0; i < c; ++i)
+        cin >> vc[i];
+    for (int i = 0; i < d; ++i)
+        cin >> vd[i];
+
+    // sort(vd.begin(), vd.end());
+
+    // for (int i = 0; i < a; ++i) {
+    //     for (int j = 0; j < b; ++j) {
+    //         for (int k = 0; k < c; ++k) {
+    //             int cur = va[i] + vb[j] + vc[k];
+    //             auto lb = lower_bound(vd.begin(), vd.end(), -cur);
+    //             if (lb - vd.begin() >= d)
+    //                 continue;
+    //             if (*lb != -cur)
+    //                 continue;
+                
+    //             cout << va[i] << ' ' << vb[j] << ' ' << vc[k] << ' ' << *lb << '\n';
+    //             return;
+    //         }
+    //     }
+    // }
+
+    unordered_map<int, pair<int, int>> mp;
+
+    for (int i = 0; i < c; ++i)
+        for (int j = 0; j < d; ++j)
+            mp[vc[i] + vd[j]] = mkp(vc[i], vd[j]);
+
+    for (int i = 0; i < a; ++i) {
+        for (int j = 0; j < b; ++j) {
+            int cur = va[i] + vb[j];
+
+            auto res = mp.find(-cur);
+
+            if (res == mp.end()) continue;
+            
+            cout << va[i] << ' ' << vb[j] << ' ' << (*res).second.first << ' ' << (*res).second.second << '\n';
+            return;
+        }
+    }
 }
 
 #undef int
@@ -136,8 +185,8 @@ int main() {
     ios::sync_with_stdio(false);
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    int N;
-    cin >> N;
-    while (N--)
+    // int N;
+    // cin >> N;
+    // while (N--)
         solve();
 }

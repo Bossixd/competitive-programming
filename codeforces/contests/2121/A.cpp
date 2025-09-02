@@ -128,6 +128,24 @@ bool operator < (const Type& cmp) const {
 */
 
 void solve() {
+    int n, s;
+    cin >> n >> s;
+
+    int mn = 101, mx = 0;
+    int b;
+    for (int i = 0; i < n; ++i) {
+        cin >> b;
+        mn = min(mn, b);
+        mx = max(mx, b);
+    }
+
+    if (mn <= s && mx >= s)
+        cout << min(abs(s - mn), abs(mx - s)) * 2 + max(abs(s - mn), abs(mx - s)) << '\n';
+    else if (mn <= s && mx <= s) {
+        cout << s - mn << '\n';
+    } else {
+        cout << mx - s << '\n';
+    }
 }
 
 #undef int

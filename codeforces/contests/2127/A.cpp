@@ -128,6 +128,44 @@ bool operator < (const Type& cmp) const {
 */
 
 void solve() {
+    int n;
+    cin >> n;
+    // cout << n << '\n';
+
+    int cur = -1;
+    int b;
+    int i;
+    for (i = 0; i < n; ++i) {
+        cin >> b;
+
+        if (b == -1) continue;
+
+        if (b == 0) {
+            cout << "NO\n";
+            ++i;
+            while (i < n) {
+                cin >> b;
+                ++i;
+            }
+            return;
+        }
+
+        if (cur == -1) {
+            cur = b;
+            continue;
+        }
+
+        if (b != cur || cur == 0) {
+            cout << "NO\n";
+            ++i;
+            while (i < n) {
+                cin >> b;
+                ++i;
+            }
+            return;
+        }
+    }
+    cout << "YES\n";
 }
 
 #undef int

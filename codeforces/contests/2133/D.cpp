@@ -128,6 +128,21 @@ bool operator < (const Type& cmp) const {
 */
 
 void solve() {
+    int n;
+    cin >> n;
+
+    vector<int> v(n + 5);
+    for (int i = 1; i <= n; ++i)
+        cin >> v[i];
+
+    vector<int> dp(n + 5);
+    dp[1] = v[1];
+
+    for (int i = 2; i <= n; ++i)
+        dp[i] = min(dp[i - 1] + v[i] - 1,
+                    dp[i - 2] + v[i - 1] + max(0LL, v[i] - i + 1));
+    
+    cout << dp[n] << '\n';
 }
 
 #undef int

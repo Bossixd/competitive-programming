@@ -128,6 +128,54 @@ bool operator < (const Type& cmp) const {
 */
 
 void solve() {
+    int n;
+    cin >> n;
+
+    vector<vector<int>> v(505);
+    vector<int> path(505);
+    int b, mx = 0;
+    for (int i = 1; i <= n; ++i) {
+        cout << "? " << i << ' ' << n << ' ';
+        for (int j = 1; j <= n; ++j)
+            cout << j << ' ';
+        cout << '\n';
+        cout.flush();
+
+        cin >> b;
+        v[b].push_back(i);
+
+        mx = max(mx, b);
+    }
+
+    path[mx] = v[mx][0];
+
+    for (int i = mx - 1; i >= 1; --i) {
+        int cur = path[i + 1];
+        int l = 0, r = v[i].size() - 1;
+        while (l < r) {
+            int m = l + (r - l) / 2;
+
+            cout << "? " << cur << ' ' << m - l + 2 << ' ' << cur << ' ';
+            for (int j = l; j <= m; ++j)
+                cout << v[i][j] << ' ';
+            cout << '\n';
+            cout.flush();
+
+            cin >> b;
+
+            if (b == 1)
+                l = m + 1;
+            else
+                r = m;
+        }
+        path[i] = v[i][l];
+    }
+
+    cout << "! " << mx << ' ';
+    for (int i = mx; i >= 1; --i)
+        cout << path[i] << ' ';
+    cout << '\n';
+    cout.flush();
 }
 
 #undef int

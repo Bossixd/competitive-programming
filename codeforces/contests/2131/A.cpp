@@ -128,6 +128,23 @@ bool operator < (const Type& cmp) const {
 */
 
 void solve() {
+    int n;
+    cin >> n;
+
+    vector<int> a(n), b(n);
+    for (int i = 0; i < n; ++i)
+        cin >> a[i];
+    for (int i = 0; i < n; ++i)
+        cin >> b[i];
+
+    int res = 0;
+
+    for (int i = 0; i < n; ++i) {
+        if (a[i] > b[i]) {
+            res += a[i] - b[i];
+        }
+    }
+    cout << res + 1 << '\n';
 }
 
 #undef int

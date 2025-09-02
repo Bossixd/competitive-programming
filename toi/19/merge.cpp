@@ -15,8 +15,6 @@ using namespace std;
 
 #define int long long
 
-int MOD = 998244353;
-
 // Layers and adds ranges in O(N)
 // Accumulates ranges onto a difference array, then pushes then onto a vector in O(N)
 struct DifferenceArray {
@@ -114,30 +112,71 @@ pair<T, U> mkp(const T& first, const U& second) {
     return make_pair(first, second);
 }
 
+int MOD = 998244353;
+
 // Inverse of i (mod p)
 int inv(int i) {
     if (i == 1) return 1;
     return MOD - (MOD / i) * inv(MOD % i) % MOD;
 }
 
-// Adding "sorting" to structs
-/*
-bool operator < (const Type& cmp) const {
-    return id < cmp.id;
-}
-*/
-
 void solve() {
+    int n, m, q;
+    cin >> n >> m >> q;
+    vector<int> x(n), s(n), y(m), t(m);
+
+    for (int i = 0; i < n; ++i) cin >> x[i];
+    for (int i = 0; i < n; ++i) cin >> s[i];
+    for (int i = 0; i < m; ++i) cin >> y[i];
+    for (int i = 0; i < m; ++i) cin >> t[i];
+
+    for (int i = 1; i < n; ++i)
+        s[i] += s[i - 1];
+    
+    for (int i = 1; i < m; ++i)
+        t[i] += t[i - 1];
+
+    while (q--) {
+        int a, b, k;
+        cin >> a >> b >> k;
+
+        auto transform = [a, b](int val) {
+            return a * val + b;
+        };
+
+        auto inverse = [a, b](int val) {
+            return (int) ((val - b) / a);
+        };
+
+        int l = min(x[0], transform(y[0]));
+        int r = max(x[x.size() - 1], transform(y[y.size() - 1]));
+        while (l < r) {
+            int m = l + (r - l) / 2;
+
+            int xp = upper_bound(x.begin(), x.end(), m) - x.begin() - 1;
+            int yp = upper_bound(y.begin(), y.end(), inverse(m)) - y.begin() - 1;
+
+            int sum = 0;
+            if (xp >= 0) sum += s[xp];
+            if (yp >= 0) sum += t[yp];
+
+            if (sum < k)
+                l = m + 1;
+            else
+                r = m;
+        }
+
+        cout << l << '\n';
+    }
 }
 
 #undef int
 
 int main() {
-    ios::sync_with_stdio(false);
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    int N;
-    cin >> N;
-    while (N--)
+    // int N;
+    // cin >> N;
+    // while (N--)
         solve();
 }

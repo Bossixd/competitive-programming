@@ -128,6 +128,51 @@ bool operator < (const Type& cmp) const {
 */
 
 void solve() {
+    int n;
+    cin >> n;
+
+    vector<int> a(n), b(n);
+    for (int i = 0; i < n; ++i)
+        cin >> a[i];
+    for (int i = 0; i < n; ++i)
+        cin >> b[i];
+
+    vector<pair<int, int>> res;
+    for (int time = 0; time < n; ++time) {
+        for (int i = 0; i < n - 1; ++i) {
+            if (a[i] < a[i + 1]) continue;
+            res.push_back(mkp(1, i + 1));
+            swap(a[i], a[i + 1]);
+        }
+    }
+
+    for (int time = 0; time < n; ++time) {
+        for (int i = 0; i < n - 1; ++i) {
+            if (b[i] < b[i + 1]) continue;
+            res.push_back(mkp(2, i + 1));
+            swap(b[i], b[i + 1]);
+        }
+    }
+
+    for (int i = 0; i < n; ++i) {
+        if (a[i] > b[i]) {
+            res.push_back(mkp(3, i + 1));
+            swap(a[i], b[i]);
+        }
+    }
+
+    cout << res.size() << '\n';
+    for (auto pr : res) {
+        cout << pr.first << ' ' << pr.second << '\n';
+    }
+
+    // for (auto i : a)
+    //     cout << i << ' ';
+    // cout << '\n';
+
+    // for (auto i : b)
+    //     cout << i << ' ';
+    // cout << '\n';
 }
 
 #undef int

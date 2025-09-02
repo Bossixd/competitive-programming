@@ -128,6 +128,29 @@ bool operator < (const Type& cmp) const {
 */
 
 void solve() {
+    int n;
+    cin >> n;
+
+    vector<int> a(n), b(n);
+    for (int i = 0; i < n; ++i)
+        cin >> a[i];
+    for (int i = 0; i < n; ++i)
+        cin >> b[i];
+
+    for (int i = 0; i < n - 1; ++i) {
+        if (a[i] == b[i]) continue;
+        if ((a[i] ^ a[i + 1]) == b[i]) continue;
+        if ((a[i] ^ b[i + 1]) == b[i]) continue;
+        cout << "NO\n";
+        return;
+    }
+
+    if (a[n - 1] != b[n - 1]) {
+        cout << "NO\n";
+        return;
+    }
+    
+    cout << "YES\n";
 }
 
 #undef int

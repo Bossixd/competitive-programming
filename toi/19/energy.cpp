@@ -10,12 +10,11 @@
 #include <set>
 #include <unordered_set>
 #include <numeric>
+#include <cstring>
 
 using namespace std;
 
 #define int long long
-
-int MOD = 998244353;
 
 // Layers and adds ranges in O(N)
 // Accumulates ranges onto a difference array, then pushes then onto a vector in O(N)
@@ -114,30 +113,55 @@ pair<T, U> mkp(const T& first, const U& second) {
     return make_pair(first, second);
 }
 
+int MOD = 1000000007;
+
 // Inverse of i (mod p)
 int inv(int i) {
     if (i == 1) return 1;
     return MOD - (MOD / i) * inv(MOD % i) % MOD;
 }
 
-// Adding "sorting" to structs
-/*
-bool operator < (const Type& cmp) const {
-    return id < cmp.id;
-}
-*/
+int n, K, d;
+int v[305];
+int pref[305];
+int dp[10][305][305];
 
-void solve() {
+
+int rec(int l, int r, int k) {
+    if (k == 1)
+        return 1;
+
+    if (dp[k][l][r] != -1)
+        return dp[k][l][r];
+    
+    int res = 0;
+    for (int i = l; i < r; ++i) {
+        if (abs((pref[i] - pref[l - 1]) - (pref[r] - pref[i])) <= d) {
+            int buf = rec(l, i, k - 1);
+            if (buf == 0) continue;
+            res = (res + (buf * rec(i + 1, r, k - 1)) % MOD) % MOD;
+        }
+    }
+
+    return dp[k][l][r] = res;
 }
 
 #undef int
 
 int main() {
-    ios::sync_with_stdio(false);
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    int N;
-    cin >> N;
-    while (N--)
-        solve();
+    cin >> n >> K >> d;
+
+    memset(dp, -1, sizeof(dp));
+
+    for (int i = 1; i <= n; ++i)
+        cin >> v[i];
+    
+    pref[0] = 0;
+    for (int i = 1; i <= n; ++i)
+        pref[i] += pref[i - 1] + v[i];
+
+
+    cout << rec(1, n, K) << '\n';
 }
